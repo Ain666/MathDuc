@@ -1,0 +1,7 @@
+{
+  "name": "Copy of AI Assistant for Math Thay Tuan",
+  "description": "An AI-powered application for math teachers to extract text from documents, generate new exam questions, and create variations of existing problems with precise mathematical formatting.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}

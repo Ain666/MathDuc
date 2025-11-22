@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Assistant for Math Teachers</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tinos:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css" integrity="sha384-sN/JTRAKCKAAzTEReAWxa2xgdGQRAqsBUVTiiyL55TCNsJgS2oNaR2Dq2auDBqtL" crossorigin="anonymous">
+    <style>
+      body {
+        font-family: 'Tinos', 'Times New Roman', serif;
+      }
+      .textbook-output {
+        line-height: 1.7;
+      }
+      .textbook-output p {
+        margin-bottom: 1.25em;
+      }
+      .textbook-output h1, .textbook-output h2, .textbook-output h3, .textbook-output h4, .textbook-output h5, .textbook-output h6 {
+          font-weight: 700;
+          margin-top: 1.5em;
+          margin-bottom: 0.5em;
+      }
+      .textbook-output ul, .textbook-output ol {
+          margin-bottom: 1.25em;
+      }
+      /* Ensure multiple choice options have proper spacing */
+      .textbook-output ul {
+          list-style-type: none;
+          padding-left: 0.5em;
+          margin-left: 0;
+      }
+      .textbook-output ol {
+          list-style-type: decimal;
+          margin-left: 1.5rem; /* Standard indent for numbered lists */
+      }
+      .textbook-output li {
+          margin-bottom: 0.5em;
+      }
+      /* --- ENHANCED TEXTBOOK-LIKE MATH RENDERING --- */
+      
+      /* 1. Inline Math Styling */
+      .katex {
+        font-size: 1.1em !important;
+        color: inherit;
+        vertical-align: -0.1em;
+        background-color: #f1f5f9; /* slate-100 */
+        padding: 0.1em 0.3em;
+        border-radius: 4px;
+        line-height: 1;
+        border: 1px solid #e2e8f0; /* slate-200 */
+      }
+      .dark .katex {
+          background-color: #334155; /* slate-700 */
+          border-color: #475569; /* slate-600 */
+      }
+      
+      /* 2. Display (Block) Math Styling */
+      .katex-display {
+        position: relative; /* Crucial for positioning the copy button */
+        display: block;
+        margin: 1.5em auto;
+        padding: 1em 1.5em;
+        overflow-x: auto;
+        overflow-y: hidden;
+        text-align: center;
+        background-color: #f8fafc; /* slate-50 */
+        border: 1px solid #e2e8f0; /* slate-200 */
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        max-width: 95%;
+      }
+      .dark .katex-display {
+          background-color: #1e293b; /* slate-800 */
+          border-color: #334155; /* slate-700 */
+      }
+      
+      /* Reset inline styles for KaTeX elements inside display blocks to avoid double-styling */
+      .katex-display .katex {
+        background-color: transparent;
+        padding: 0;
+        border-radius: 0;
+        border: none;
+        color: inherit;
+        font-weight: normal;
+      }
+      
+      /* Custom Scrollbar */
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background-color: #cbd5e1; /* cool-gray-300 */
+        border-radius: 20px;
+        border: 2px solid transparent;
+        background-clip: content-box;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background-color: #94a3b8; /* cool-gray-400 */
+      }
+      .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+        background-color: #4b5563; /* gray-600 */
+      }
+      .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background-color: #6b7280; /* gray-500 */
+      }
+    </style>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              primary: {
+                light: '#60a5fa', // blue-400
+                DEFAULT: '#3b82f6', // blue-500
+                dark: '#2563eb', // blue-600
+              },
+              secondary: {
+                light: '#c084fc', // purple-400
+                DEFAULT: '#a855f7', // purple-500
+                dark: '#7e22ce', // purple-700
+              },
+              accent: {
+                light: '#fbbf24', // amber-400
+                DEFAULT: '#f59e0b', // amber-500
+                dark: '#d97706', // amber-600
+              },
+            },
+            fontFamily: {
+              sans: ['Tinos', 'Times New Roman', 'serif'],
+            },
+            keyframes: {
+              fadeIn: {
+                '0%': { opacity: '0', transform: 'translateY(10px)' },
+                '100%': { opacity: '1', transform: 'translateY(0)' },
+              },
+              pulse: {
+                '0%, 100%': { opacity: '1' },
+                '50%': { opacity: '0.5' },
+              }
+            },
+            animation: {
+              'fade-in': 'fadeIn 0.5s ease-out forwards',
+              'pulse-mic': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            },
+          }
+        }
+      }
+    </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.7.1/mammoth.browser.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.3.136/pdf.min.mjs" type="module"></script>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.28.0",
+    "react-markdown": "https://esm.sh/react-markdown@9?deps=react@19",
+    "remark-math": "https://esm.sh/remark-math@6",
+    "rehype-katex": "https://esm.sh/rehype-katex@7"
+  }
+}
+</script>
+</head>
+  <body class="bg-gradient-to-br from-slate-50 to-gray-100 dark:from-slate-800 dark:to-slate-900">
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
